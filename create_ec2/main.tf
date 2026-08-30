@@ -64,10 +64,39 @@
 
 #####################################################
 #! Depends On Example
-provider "aws" {
-    region = var.aws_region
-}
+# provider "aws" {
+#     region = var.aws_region
+# }
 
+# data "aws_ami" "amazon_linux" {
+#     most_recent = true
+#     owners = ["amazon"]
+#     filter {
+#         name = "name"
+#         values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+#     }
+# }
+
+# resource "aws_instance" "my-ec2" {
+#     ami = data.aws_ami.amazon_linux.id
+#     instance_type = var.instance_type
+#     tags = {
+#         Name = var.instance_name
+#     }
+#     depends_on = [aws_s3_bucket.my_bucket]
+# }
+
+# resource "aws_s3_bucket" "my_bucket" {
+#     bucket = var.bucket_name
+#     tags = {
+#         Name = var.bucket_name
+#     }
+# }
+
+#! Module Example
+provider "aws" {
+  region = var.aws_region
+}
 data "aws_ami" "amazon_linux" {
     most_recent = true
     owners = ["amazon"]
@@ -76,19 +105,9 @@ data "aws_ami" "amazon_linux" {
         values = ["amzn2-ami-hvm-*-x86_64-gp2"]
     }
 }
-
-resource "aws_instance" "my-ec2" {
-    ami = data.aws_ami.amazon_linux.id
-    instance_type = var.instance_type
-    tags = {
-        Name = var.instance_name
-    }
-    depends_on = [aws_s3_bucket.my_bucket]
-}
-
-resource "aws_s3_bucket" "my_bucket" {
-    bucket = var.bucket_name
-    tags = {
-        Name = var.bucket_name
-    }
+module "ec2_instance" {
+  source = "./ec2-module"
+  ami = data.aws_ami.amazon_linux.id
+  instance_type = var.instance_type
+  name = var.instance_name
 }
