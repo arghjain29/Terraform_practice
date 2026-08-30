@@ -1,0 +1,94 @@
+#!##############################################
+# provider "aws" {
+#   region = "ap-south-1"
+# }
+
+# resource "aws_instance" "my-ec2" {
+#     ami = "ami-0ac7b260cf76d8865"
+#     instance_type = "t3.micro"
+#     tags = {
+#         Name = "my-terraform-ec2"
+#     }
+# }
+
+###########################################
+#! Variables
+# provider "aws" {
+#     region = var.aws_region
+# }
+
+# data "aws_ami" "amazon_linux" {
+#     most_recent = true
+#     owners = ["amazon"]
+#     filter {
+#         name = "name"
+#         values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+#     }
+# }
+
+# resource "aws_instance" "my-ec2" {
+#     ami = data.aws_ami.amazon_linux.id
+#     instance_type = var.instance_type
+#     tags = {
+#         Name = var.instance_name
+#     }
+# }
+
+#####################################################
+#! Conditonal Expressions & locals examples
+# provider "aws" {
+#     region = var.aws_region
+# }
+
+# data "aws_ami" "amazon_linux" {
+#     most_recent = true
+#     owners = ["amazon"]
+#     filter {
+#         name = "name"
+#         values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+#     }
+# }
+
+# locals {
+#   name_tag = var.instance_type == "t3.micro" ? "Micro Instance" : "Other Instance"
+# }
+
+# resource "aws_instance" "my-ec2" {
+#     ami = data.aws_ami.amazon_linux.id
+#     instance_type = var.instance_type
+#     tags = {
+#         # Name = var.instance_name
+#         Name = local.name_tag
+#     }
+# }
+
+#####################################################
+#! Depends On Example
+provider "aws" {
+    region = var.aws_region
+}
+
+data "aws_ami" "amazon_linux" {
+    most_recent = true
+    owners = ["amazon"]
+    filter {
+        name = "name"
+        values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+    }
+}
+
+resource "aws_instance" "my-ec2" {
+    ami = data.aws_ami.amazon_linux.id
+    instance_type = var.instance_type
+    tags = {
+        Name = var.instance_name
+    }
+    depends_on = [aws_s3_bucket.my_bucket]
+}
+
+resource "aws_s3_bucket" "my_bucket" {
+    bucket = var.bucket_name
+    tags = {
+        Name = var.bucket_name
+    }
+}
