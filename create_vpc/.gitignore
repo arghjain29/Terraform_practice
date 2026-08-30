@@ -1,0 +1,10 @@
+# Local provider cache and modules
+**/.terraform/*
+
+# Secrets and infrastructure state
+*.tfstate
+*.tfstate.backup
+
+# Variable files that might contain secrets in the future
+*.tfvars
+*.tfvars.json
