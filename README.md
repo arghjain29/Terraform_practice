@@ -7,6 +7,7 @@ This repository contains Terraform practice code for provisioning AWS infrastruc
 - [Repository Overview](#repository-overview)
 - [create_ec2](#create_ec2)
 - [create_vpc](#create_vpc)
+- [Remote_State_Locking_S3_DynamoDB](#remote_state_locking_s3_dynamodb)
 - [Usage](#usage)
 - [Notes](#notes)
 
@@ -82,6 +83,72 @@ From `create_vpc`:
 3. `terraform apply`
 4. `terraform destroy` to clean up
 
+## Remote_State_Locking_S3_DynamoDB
+
+The `Remote_State_Locking_S3_DynamoDB` configuration currently provisions:
+- An S3 bucket for Terraform remote state storage
+- A DynamoDB table for state locking
+- An EC2 instance that uses the remote backend configuration
+
+### Files
+
+- `Remote_State_Locking_S3_DynamoDB/main.tf` – EC2 instance example
+- `Remote_State_Locking_S3_DynamoDB/backend.tf` – S3 backend configuration for remote state
+- `Remote_State_Locking_S3_DynamoDB/backend-setup/` – Helper configuration that creates the S3 bucket and DynamoDB table
+
+### Variables
+
+- `aws_region`: `ap-south-1`
+- `bucket_name`: `terraform-state-bucket3242342`
+- `environment`: `dev`
+- `lock_table_name`: `terraform-locks`
+
+### Outputs
+
+- `s3_bucket_name`
+- `dynamodb_table_name`
+
+### How to run
+
+From `Remote_State_Locking_S3_DynamoDB`:
+
+1. Run the `backend-setup` configuration first so the S3 bucket and DynamoDB table exist.
+2. Then run `terraform init` in `Remote_State_Locking_S3_DynamoDB`.
+3. Run `terraform plan`.
+4. Run `terraform apply`.
+5. Use `terraform destroy` to clean up the EC2 example when needed.
+
+#### backend-setup
+
+The `backend-setup` folder is used to create the resources needed by the remote backend before the main configuration can store state in S3 and use DynamoDB locking.
+
+##### Files
+
+- `Remote_State_Locking_S3_DynamoDB/backend-setup/main.tf` – Creates the S3 bucket and DynamoDB table
+- `Remote_State_Locking_S3_DynamoDB/backend-setup/variable.tf` – Input variables for the backend resources
+- `Remote_State_Locking_S3_DynamoDB/backend-setup/outputs.tf` – Bucket and table name outputs
+
+##### Variables
+
+- `aws_region`: `ap-south-1`
+- `bucket_name`: `terraform-state-bucket3242342`
+- `environment`: `dev`
+- `lock_table_name`: `terraform-locks`
+
+##### Outputs
+
+- `s3_bucket_name`
+- `dynamodb_table_name`
+
+##### How to run
+
+From `Remote_State_Locking_S3_DynamoDB/backend-setup`:
+
+1. `terraform init`
+2. `terraform plan`
+3. `terraform apply`
+4. `terraform destroy` if you want to remove the backend resources
+
 ## Usage
 
 Use the commands above from the folder you want to work on.
@@ -89,4 +156,5 @@ Use the commands above from the folder you want to work on.
 ## Notes
 
 - Several earlier Terraform examples are kept commented in `create_ec2/main.tf` for learning/reference, including the S3 bucket example and `depends_on` usage.
+- The remote-state example uses an S3 backend plus DynamoDB locking, so the backend resources must exist before the main configuration is initialized.
 - Ensure AWS credentials are configured in your environment before running Terraform.
