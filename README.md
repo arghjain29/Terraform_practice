@@ -1,6 +1,6 @@
 # Terraform Practice
 
-This repository contains Terraform practice code for provisioning AWS infrastructure.
+This repository contains Terraform practice code for provisioning AWS infrastructure. 
 
 ## Table of Contents
 
